@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: timescale/timescaledb-ha:pg16-oss
+    environment:
+      POSTGRES_USER: polyprism
+      POSTGRES_PASSWORD: polyprism
+      POSTGRES_DB: polyprism
+    ports:
+      - "5432:5432"
+    volumes:
+      - polyprism_data:/home/postgres/pgdata/data
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U polyprism -d polyprism"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      DATABASE_URL: postgresql+asyncpg://polybot:polybot@postgres:5432/polybot
+      REDIS_URL: redis://redis:6379/0
+      ENV: development
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      uv run uvicorn polybot.api.main:app
+      --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./src:/app/src:ro
+      - ./.env:/app/.env:ro
+
+volumes:
+  polyprism_data:
