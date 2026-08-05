@@ -16,9 +16,9 @@ class Settings(BaseSettings):
     # Polymarket
     polymarket_clob_url: str = "https://clob.polymarket.com"
     gamma_api_url: str = "https://gamma-api.polymarket.com"
-    polymarket_api_key: str
-    polymarket_api_secret: str
-    polymarket_passphrase: str
+    polymarket_api_key: str = ""
+    polymarket_api_secret: str = ""
+    polymarket_passphrase: str = ""
 
     # Storage
     database_url: str = "postgresql+asyncpg://polybot:polybot@localhost:5432/polybot"
