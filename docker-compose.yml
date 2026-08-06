@@ -31,7 +31,7 @@ services:
       context: .
       dockerfile: Dockerfile.api
     environment:
-      DATABASE_URL: postgresql+asyncpg://polybot:polybot@postgres:5432/polybot
+      DATABASE_URL: postgresql+asyncpg://polyprism:polyprism@postgres:5432/polyprism
       REDIS_URL: redis://redis:6379/0
       ENV: development
     ports:
@@ -42,7 +42,7 @@ services:
       redis:
         condition: service_healthy
     command: >
-      uv run uvicorn polybot.api.main:app
+      uv run uvicorn polyprism.api.main:app
       --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ./src:/app/src:ro

@@ -1,4 +1,4 @@
-from src.polybot.config import get_settings
+from polyprism.config import get_settings
 
 
 def main():

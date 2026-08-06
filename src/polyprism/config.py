@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     polymarket_passphrase: str = ""
 
     # Storage
-    database_url: str = "postgresql+asyncpg://polybot:polybot@localhost:5432/polybot"
+    database_url: str = "postgresql+asyncpg://polyprism:polyprism@localhost:5432/polyprism"
     redis_url: str = "redis://localhost:6379/0"
 
     # App
