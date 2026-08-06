@@ -1,7 +1,7 @@
 .PHONY: dev test lint format db-up db-down db-migrate db-shell seed
 
 dev:
-	uv run uvicorn polybot.api.main:app --reload --host 0.0.0.0 --port 8000
+	uv run uvicorn polyprism.api.main:app --reload --host 0.0.0.0 --port 8000
 
 test:
 	uv run pytest -q
