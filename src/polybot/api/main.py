@@ -5,4 +5,4 @@ app = FastAPI(title="Polyprism", version="0.1.0")
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "OK"}
