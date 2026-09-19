@@ -9,7 +9,7 @@ class MarketMetadata(BaseModel):
     condition_id: str = Field(..., description="Unique market identifier (66-char hex)")
     question: str
     category: str | None = None
-    tags: dict | None = None
+    tags: list[str] | None = None
     resolution_source: str | None = None
     created_at: datetime
     closes_at: datetime | None = None
@@ -29,7 +29,7 @@ class OrderBookLevel(BaseModel):
 class OrderBook(BaseModel):
     """Order book snapshot from CLOB API."""
 
-    market_id: str
+    token_id: str
     timestamp: datetime
     bids: list[OrderBookLevel]
     asks: list[OrderBookLevel]

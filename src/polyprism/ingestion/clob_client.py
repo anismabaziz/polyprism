@@ -1,9 +1,40 @@
+from __future__ import annotations
+
 from datetime import UTC, datetime
+from typing import Any
 
 import httpx
 
 from polyprism.config import get_settings
 from polyprism.ingestion.schemas import OrderBook, OrderBookLevel
+
+
+def parse_order_book(
+    token_id: str,
+    data: dict[str, Any],
+    timestamp: datetime | None = None,
+) -> OrderBook:
+    """Parse one raw CLOB book payload into an OrderBook (no network)."""
+    bids = [
+        OrderBookLevel(price=float(level["price"]), size=float(level["size"]))
+        for level in data.get("bids", [])
+    ]
+    asks = [
+        OrderBookLevel(price=float(level["price"]), size=float(level["size"]))
+        for level in data.get("asks", [])
+    ]
+
+    best_bid = max((b.price for b in bids), default=None)
+    best_ask = min((a.price for a in asks), default=None)
+
+    return OrderBook(
+        token_id=token_id,
+        timestamp=timestamp or datetime.now(UTC),
+        bids=bids,
+        asks=asks,
+        best_bid=best_bid,
+        best_ask=best_ask,
+    )
 
 
 class ClobClient:
@@ -27,25 +58,4 @@ class ClobClient:
             response.raise_for_status()
             data = response.json()
 
-        # Parse bids and asks
-        bids = [
-            OrderBookLevel(price=float(level["price"]), size=float(level["size"]))
-            for level in data.get("bids", [])
-        ]
-        asks = [
-            OrderBookLevel(price=float(level["price"]), size=float(level["size"]))
-            for level in data.get("asks", [])
-        ]
-
-        # Calculate best bid/ask
-        best_bid = max((b.price for b in bids), default=None)
-        best_ask = min((a.price for a in asks), default=None)
-
-        return OrderBook(
-            market_id=token_id,
-            timestamp=datetime.now(UTC),
-            bids=bids,
-            asks=asks,
-            best_bid=best_bid,
-            best_ask=best_ask,
-        )
+        return parse_order_book(token_id, data)
