@@ -27,6 +27,10 @@ async def session():
         await conn.run_sync(Base.metadata.create_all)
     factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     async with factory() as s:
+        # Start empty even when the database holds demo seed rows.
+        for table in (OrderBookSnapshot, Market):
+            await s.execute(table.__table__.delete())
+        await s.commit()
         yield s
         for table in (OrderBookSnapshot, Market):
             await s.execute(table.__table__.delete())

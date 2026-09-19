@@ -1,3 +1,10 @@
+"""Manual live Polymarket check (never collected by pytest).
+
+Hits the real Gamma and CLOB APIs. Run explicitly with:
+``uv run python scripts/check_live.py``. Keep this filename outside the
+``test_*.py`` pattern so the test runner never imports it.
+"""
+
 import asyncio
 
 from polyprism.ingestion.clob_client import ClobClient

@@ -25,7 +25,26 @@ def _snapshot(token_id: str) -> OrderBookSnapshot:
 
 
 @pytest.fixture()
-def client():
+def client(monkeypatch):
+    """Test client with no network, no database, and no real scheduler.
+
+    The overridden session dependency plus the patched repository keep reads
+    offline, while the stubbed scheduler keeps the API lifespan from starting
+    background polling during unit runs.
+    """
+
+    class _StubScheduler:
+        def start(self):
+            pass
+
+        def shutdown(self, wait=False):
+            pass
+
+    monkeypatch.setattr(
+        "polyprism.api.main.create_scheduler",
+        lambda *args, **kwargs: _StubScheduler(),
+    )
+
     async def override_get_session():
         yield object()
 

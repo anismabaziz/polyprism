@@ -1,4 +1,4 @@
-.PHONY: dev test lint format db-up db-down db-migrate db-shell seed
+.PHONY: dev test test-unit test-integration lint format db-up db-down db-migrate db-shell seed check-live
 
 export PYTHONPATH := src
 
@@ -7,6 +7,12 @@ dev:
 
 test:
 	uv run pytest -q
+
+test-unit:
+	uv run pytest -q -m "not integration"
+
+test-integration:
+	uv run pytest -q -m integration
 
 lint:
 	uv run ruff check .
@@ -30,3 +36,6 @@ db-shell:
 
 seed:
 	uv run python scripts/seed_db.py
+
+check-live:
+	uv run python scripts/check_live.py
